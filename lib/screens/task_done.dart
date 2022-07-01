@@ -118,6 +118,7 @@ class TaskDone extends StatelessWidget {
             }
             return InkWell(
               onTap: () {
+                _getx.currentIndex.value= index;
                 Route route = MaterialPageRoute(builder: (context) => ItemDetail());
                 Navigator.push(context, route);
               },
@@ -173,7 +174,7 @@ class TaskDone extends StatelessWidget {
               Checkbox(
                   checkColor: Colors.white,
                   shape: const CircleBorder(),
-                  activeColor: const Color(0xFF6933FF),
+                  activeColor: Color(item.curcolor),
                   value: tsk.values.toList().first,
                   onChanged: (bool? value) {}),
               Text(tsk.keys.toList().first,

@@ -12,31 +12,23 @@ class TaskGetx extends GetxController{
   final _db = Localstore.instance;
   final list = <Tasks>[].obs;
 
-  RxList<String> tasklist_name= <String>[].obs;
-  RxList<String> taskdone_name= <String>[].obs;
-  RxList<dynamic> itemList= [].obs;
-  RxList<dynamic> itemdone=[].obs;
   
   Rx<DateTime> time= DateTime.now().obs;
   Rx<Color> pickerColor = const Color(0xff6633ff).obs;
   Rx<Color> currentColor = const Color(0xff6633ff).obs;
   Rx<int> currentIndex = 0.obs;
-  RxList<bool> item_stt= <bool>[].obs;
-  RxList<bool> task_stt= <bool>[].obs;
+
+  RxList<bool> item_stt= <bool>[].obs;// list item stt of current task
+
+
   RxInt countdone =0.obs;
   RxDouble progress = 0.0.obs;
 
   void getData(){
-    print('get data');
+    list.clear();
     _db.collection('TaskLists').get().then((value) {
       for (var key in value!.keys) {
-        // list.map((element) {
-        //   print('get');
-        //   if (element.name != key) {
-        //     print('get sucess');
-            list.add(Tasks.fromMap(value[key]));
-        //   }
-        // });
+        list.add(Tasks.fromMap(value[key]));
       }
     });
   }
@@ -64,6 +56,12 @@ class TaskGetx extends GetxController{
     task.setTask();
   }
 
+  void removeItem(int index){
+    final tasks=list[currentIndex.value];
+    tasks.items.removeAt(index);
+    count();
+    checkStt(tasks);
+  }
 
   void updateTask(int index, bool status){
     item_stt[index]=status;
@@ -71,32 +69,22 @@ class TaskGetx extends GetxController{
     tasks.items[index].values.toList().first= status;
     String taskname = tasks.items[index].keys.toList().first;
     tasks.items[index][taskname] = status;
-
-    bool stt = true;
-
-    if (tasks.items.isEmpty) {
-      stt = false;
-    } else     
-    {  
-      for (var item in tasks.items) {
-        if (item.values.toList().first == false) {
-          stt = false;
-          break;
-        }
-      }
-    }
-
-    tasks.status=stt;
+    checkStt(tasks);
     tasks.curcolor=currentColor.value.value;
     count();
-    tasks.setTask();
   }
 
   void updateColor(){
     final tasks=list[currentIndex.value];
-    print(currentIndex.value);
 
-    bool stt = true;
+    // checkStt(tasks);
+
+    tasks.curcolor =currentColor.value.value;
+    tasks.setTask();
+  }
+
+  void checkStt(Tasks tasks){
+        bool stt = true;
     if (tasks.items.isEmpty) {
       stt = false;
     } else     
@@ -110,9 +98,6 @@ class TaskGetx extends GetxController{
     }
 
     tasks.status=stt;
-    task_stt[currentIndex.value]=stt;
-    tasks.curcolor =currentColor.value.value;
-    tasks.setTask();
   }
 
   void count(){
@@ -125,15 +110,11 @@ class TaskGetx extends GetxController{
   }
 
   void set_itemstt(){
+    item_stt.clear();
     final task = list[currentIndex.value];
     for (var item in task.items){
       item_stt.value.add(item.values.toList().first);
     }
   }
 
-  void set_taskstt(){
-    for (var task in list){
-      task_stt.value.add(task.status);
-    }
-  }
 }

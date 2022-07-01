@@ -25,8 +25,7 @@ class _HomepageState extends State<Homepage> {
   static final List<Widget> _widgetOptions = <Widget>[
     TaskList(),
     TaskDone(),
-    const Text('set'),
-    // TaskSetting(),
+    TaskSetting(),
   ];
 
   void _onItemTapped(int index) {

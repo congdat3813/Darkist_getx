@@ -22,7 +22,7 @@ class TaskList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     _getx=Get.find();
-    _getx.set_taskstt();
+    // _getx.set_taskstt();
     return Scaffold(
       body: SafeArea(
       child: SizedBox(
@@ -111,7 +111,6 @@ class TaskList extends StatelessWidget {
   }
 
   Widget buildListView(BuildContext context) {
-    // print('length: ${_getx.list.length}');
     return
       Expanded(
         child: Container(
@@ -123,9 +122,9 @@ class TaskList extends StatelessWidget {
             separatorBuilder: (context, index) => const SizedBox(width: 20),
             itemCount: _getx.list.length,
             itemBuilder: (BuildContext context, index) {
-              final item = _getx.list[index];
-              print('item: ${item.items}');
-              if (!_getx.task_stt.isEmpty && _getx.task_stt[index] == true) {
+              final curtask = _getx.list[index];
+              print('item: ${curtask.items}');
+              if (curtask.status == true) {
                 return const SizedBox.shrink();
               }
               else{
@@ -139,7 +138,7 @@ class TaskList extends StatelessWidget {
                       width: 220,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(10.0),
-                        color: Color(item.curcolor),
+                        color: Color(curtask.curcolor),
                       ),
                       child: SingleChildScrollView(
                         child: Column(
@@ -147,7 +146,7 @@ class TaskList extends StatelessWidget {
                             Padding(
                               padding: const EdgeInsets.symmetric(
                                   vertical: 20, horizontal: 0),
-                              child: Text(item.name,
+                              child: Text(curtask.name,
                                 style: const TextStyle(
                                   color: Colors.white,
                                   fontSize: 18,
@@ -171,7 +170,7 @@ class TaskList extends StatelessWidget {
                                         Checkbox(
                                             checkColor: Colors.white,
                                             shape: const CircleBorder(),
-                                            activeColor: Color(item.curcolor),
+                                            activeColor: Color(curtask.curcolor),
                                             value: tsk.values.toList().first,
                                             onChanged: (bool? value) {}),
                                         Text(tsk.keys.toList().first,
@@ -196,10 +195,8 @@ class TaskList extends StatelessWidget {
                 );        
               }
             },
-            
           ),
         ),
       );
   }
-  
 }

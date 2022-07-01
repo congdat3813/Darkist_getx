@@ -19,43 +19,24 @@ class ItemDetail extends StatelessWidget {
 
   static final TaskGetx _getx =Get.find();
 
-  @override
-
-
-  final Tasks item=_getx.list[_getx.currentIndex.value];
-  bool isChecked = false;
+  final Tasks curtask=_getx.list[_getx.currentIndex.value];
 
   final myController = TextEditingController();
 
-  // @override
-  // void initState() {
+  void changeColor(Color color) {
+     _getx.pickerColor.value = color;
+  }
 
-  //   _subscription = _db.collection('TaskLists').stream.listen((event) {
-  //     setState(() {
-  //       final item = Tasks.fromMap(event);
-  //       _items.putIfAbsent(item.name, () => item);
-  //       if (item.items.isEmpty) {
-  //         count=0;
-  //         progress = 0;
-  //       }
-  //       else {
-  //         int countDone = 0;
-  //         for (var ele in item.items){
-  //           if (ele.values.toList().first) countDone++;
-  //         }
-  //         count= countDone;
-  //         progress = countDone / item.items.length;
-  //       }
+  void onGoBack(BuildContext context){
+    _getx.updateColor();
+    _getx.getData();
+    Navigator.pop(context);
+  }
 
-  //     });
-  //   });
-  //   super.initState();
-  // }
-  
   @override
   Widget build(BuildContext context) {
-    _getx.pickerColor.value= Color(item.curcolor);
-    _getx.currentColor.value= Color(item.curcolor);
+    _getx.pickerColor.value= Color(curtask.curcolor);
+    _getx.currentColor.value= Color(curtask.curcolor);
     _getx.count();   
     _getx.set_itemstt();
     return
@@ -64,20 +45,22 @@ class ItemDetail extends StatelessWidget {
           backgroundColor: Colors.white,
           elevation: 0,
           automaticallyImplyLeading: false,
-          leading: colorButton(context),
+          leading: Obx(() => colorButton(context),),
           actions: [
             cancelButton(context),          
           ],
         ),
         backgroundColor: Colors.white,
         body: bodyView(context),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () => showDialog(
-            context: context,
-            builder: (BuildContext context) => addItem(context),
+        floatingActionButton: Obx( () =>
+          FloatingActionButton(
+            onPressed: () => showDialog(
+              context: context,
+              builder: (BuildContext context) => addItem(context),
+            ),
+            child: const Icon(Icons.add),
+            backgroundColor: _getx.currentColor.value,
           ),
-          child: const Icon(Icons.add),
-          backgroundColor: _getx.currentColor.value,
         ),
       );
   }
@@ -115,10 +98,7 @@ class ItemDetail extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(0, 0, 20, 0),
       child: Obx(()=>
         IconButton(
-          onPressed: () {
-            _getx.updateColor();
-            Navigator.pop(context);
-          },
+          onPressed: () => onGoBack(context),
           icon: Icon(
             Icons.cancel_outlined, 
             color: _getx.currentColor.value,
@@ -139,7 +119,7 @@ class ItemDetail extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                Obx(() => Text('${_getx.countdone.value} of ${item.items.length} tasks', style: const TextStyle(fontSize: 20,color: Colors.grey),))
+                Obx(() => Text('${_getx.countdone.value} of ${curtask.items.length} tasks', style: const TextStyle(fontSize: 20,color: Colors.grey),))
               ]
             ),
             Obx(() => processBar(),),
@@ -154,12 +134,12 @@ class ItemDetail extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
-        Text(item.name, style: const TextStyle(
+        Text(curtask.name, style: const TextStyle(
           fontSize: 40,
           color: Colors.black,
           fontWeight: FontWeight.w600
         )),
-        deleteButton(context),
+        Obx(()=>deleteButton(context),),
       ]
     );
   }
@@ -169,7 +149,7 @@ class ItemDetail extends StatelessWidget {
       onPressed: () => showDialog(
         context: context,
         builder: (BuildContext context) => AlertDialog(
-          title: Text('Delete: ${item.name}'),
+          title: Text('Delete: ${curtask.name}'),
           content: const Text('Are you sure want to delete this list'),
           actions: [
             ElevatedButton(
@@ -238,49 +218,53 @@ class ItemDetail extends StatelessWidget {
       width: MediaQuery.of(context).size.width,
       height: MediaQuery.of(context).size.height - 200,
       alignment: Alignment.topLeft,
-      child: ListView.builder(
-        itemCount: item.items.length,
-        itemBuilder: (BuildContext context, index) {
-          Color getColor(Set<MaterialState> states) {
-            return _getx.currentColor.value;
-          }
-          
-          return Dismissible(
-          background: Container(
-            color: Colors.red,
-          ),
-            key: ValueKey<dynamic>(item.items[index].keys),
-            onDismissed: (DismissDirection direction) {
-                // item.removeItems(index);
-            },
-            child: Obx( () =>
-              Row(
-                children: <Widget> [
-                    Checkbox(
-                      checkColor: Colors.white,
-                      fillColor: MaterialStateProperty.resolveWith(getColor),
-                      value: _getx.item_stt[index], 
-                      onChanged: (bool? value) {
-                          _getx.updateTask(index, !_getx.item_stt[index]);
-                          print(value);
-                          print(_getx.item_stt.value);
-                      }
-                    ),
-                  Text(
-                    _getx.list[_getx.currentIndex.value].items[index].keys.toList().first,
-                    style: TextStyle(
-                      fontSize: 20,
-                      color: item.items[index].values.toList().first ? _getx.currentColor.value : Colors.black,
-                      decoration: item.items[index].values.toList().first ? TextDecoration.lineThrough: null
-                    )
-                  ),
-                ],
-              ),
-            ),
-          );
-        }, 
-      ),
+      child:
+        ListView.builder(
+          itemCount: curtask.items.length,
+          itemBuilder: (BuildContext context, index) {
+            return builderItemlist(index);
+          }, 
+        ),
     );
+  }
+
+  Widget builderItemlist(int index){
+    Color getColor(Set<MaterialState> states) {
+      return _getx.currentColor.value;
+    }
+    
+    return Obx( () =>
+      Dismissible(
+      background: Container(
+        color: _getx.currentColor.value,
+      ),
+        key: ValueKey<dynamic>(curtask.items[index].keys),
+        onDismissed: (DismissDirection direction) {
+            _getx.removeItem(index);
+        },
+        child:
+          Row(
+            children: <Widget> [
+                Checkbox(
+                  checkColor: Colors.white,
+                  fillColor: MaterialStateProperty.resolveWith(getColor),
+                  value: _getx.item_stt[index], 
+                  onChanged: (bool? value) {
+                      _getx.updateTask(index, !_getx.item_stt[index]);
+                  }
+                ),
+              Text(
+                curtask.items[index].keys.toList().first,
+                style: TextStyle(
+                  fontSize: 20,
+                  color: curtask.items[index].values.toList().first ? _getx.currentColor.value : Colors.black,
+                  decoration: curtask.items[index].values.toList().first ? TextDecoration.lineThrough: null
+                )
+              ),
+            ],
+          ),
+              ),
+    );    
   }
 
   Widget addItem(BuildContext context){
@@ -310,10 +294,6 @@ class ItemDetail extends StatelessWidget {
         ),
       ],
     );
-  }
-  
-  void changeColor(Color color) {
-     _getx.pickerColor.value = color;
   }
   
 }
