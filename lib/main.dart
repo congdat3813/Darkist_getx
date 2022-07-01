@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:getx_test/controller/controller.dart';
 
 import 'package:getx_test/theme.dart';
 
@@ -8,28 +10,20 @@ void main() {
   runApp(Taskist());
 }
 
-// class Taskist extends StatefulWidget {
-//   const Taskist({Key? key}) : super(key: key);
-
-//   @override
-//   State<Taskist> createState() => _TaskistState();
-// }
-
-// class _TaskistState extends State<Taskist> {
-  
-//   }
-// }
 
 class Taskist extends StatelessWidget {
   Taskist({Key? key}) : super(key: key);
-  ThemeData theme = TaskistTheme.light();
+  ThemeData theme = TaskistTheme.dark();
+  static ThemeGetx themeObx= Get.put(ThemeGetx());
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: theme,
-      title: 'Darkist',
-      home: const Homepage(index: 0,),
+    return Obx( () =>
+      MaterialApp(
+        debugShowCheckedModeBanner: false,
+        theme: themeObx.theme.value,
+        title: 'Darkist',
+        home: const Homepage(index: 0,),
+      ),
     );
   }
 }

@@ -5,7 +5,9 @@ import 'package:get/get.dart';
 import 'package:getx_test/models/task_model.dart';
 import 'package:localstore/localstore.dart';
 
+import 'package:getx_test/theme.dart';
 import 'package:flutter/foundation.dart';
+import 'package:getx_test/theme.dart';
 
 class TaskGetx extends GetxController{
   static const tag = 'TaskGetx';
@@ -25,6 +27,7 @@ class TaskGetx extends GetxController{
   RxDouble progress = 0.0.obs;
 
   void getData(){
+    print('get data');
     list.clear();
     _db.collection('TaskLists').get().then((value) {
       for (var key in value!.keys) {
@@ -53,7 +56,6 @@ class TaskGetx extends GetxController{
     task.curcolor= currentColor.value.value;
     task.status=false;
     count();
-    task.setTask();
   }
 
   void removeItem(int index){
@@ -109,6 +111,12 @@ class TaskGetx extends GetxController{
     progress.value = (task.items.isEmpty)? 0.0 : countdone/task.items.length;
   }
 
+  void saveColor(){
+    final task = list[currentIndex.value];
+    task.curcolor=currentColor.value.value;
+    task.setTask();
+  }
+
   void set_itemstt(){
     item_stt.clear();
     final task = list[currentIndex.value];
@@ -117,4 +125,11 @@ class TaskGetx extends GetxController{
     }
   }
 
+}
+
+class ThemeGetx extends GetxController{
+  Rx<ThemeData> theme = TaskistTheme.light().obs;
+  void changeTheme(){
+    theme.value = (theme.value==TaskistTheme.light())? TaskistTheme.dark(): TaskistTheme.light();
+  }
 }

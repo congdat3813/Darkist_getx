@@ -35,6 +35,7 @@ class ItemDetail extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
     _getx.pickerColor.value= Color(curtask.curcolor);
     _getx.currentColor.value= Color(curtask.curcolor);
     _getx.count();   
@@ -42,7 +43,6 @@ class ItemDetail extends StatelessWidget {
     return
       Scaffold(
         appBar: AppBar(
-          backgroundColor: Colors.white,
           elevation: 0,
           automaticallyImplyLeading: false,
           leading: Obx(() => colorButton(context),),
@@ -50,7 +50,6 @@ class ItemDetail extends StatelessWidget {
             cancelButton(context),          
           ],
         ),
-        backgroundColor: Colors.white,
         body: bodyView(context),
         floatingActionButton: Obx( () =>
           FloatingActionButton(
@@ -83,6 +82,7 @@ class ItemDetail extends StatelessWidget {
                   child: const Text('Got it'),
                   onPressed: () {
                     _getx.currentColor.value = _getx.pickerColor.value;
+                    _getx.saveColor();
                     Navigator.pop(context);
                   },
                 ),
@@ -136,7 +136,6 @@ class ItemDetail extends StatelessWidget {
       children: <Widget>[
         Text(curtask.name, style: const TextStyle(
           fontSize: 40,
-          color: Colors.black,
           fontWeight: FontWeight.w600
         )),
         Obx(()=>deleteButton(context),),
@@ -191,6 +190,7 @@ class ItemDetail extends StatelessWidget {
           flex: 11,
           child: LinearProgressIndicator(
             value: _getx.progress.value,
+            color: _getx.currentColor.value,
             minHeight: 6,
             backgroundColor: const Color(0xFFecf0f1),
           ),
@@ -285,6 +285,7 @@ class ItemDetail extends StatelessWidget {
         ElevatedButton(
           onPressed: () {
             _getx.addItem({myController.text: false});
+            myController.clear();
             Navigator.pop(context);
           }, 
           child: const Text('Add'),

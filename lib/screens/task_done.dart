@@ -18,16 +18,6 @@ class TaskDone extends StatelessWidget {
 
   static final TaskGetx _getx = Get.find();
 
-
-
-  FutureOr onGoBack(BuildContext context ) {
-    Navigator.pushReplacement(context, MaterialPageRoute(
-      builder: (BuildContext context) {
-        return const Homepage(index: 1);
-      })
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return 
@@ -38,17 +28,11 @@ class TaskDone extends StatelessWidget {
             child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(
-              height: 20,
-            ),
+            const SizedBox( height: 20,),
             Obx(() => buildDatetime(),),
-            const SizedBox(
-              height: 20,
-            ),
+            const SizedBox(height: 20,),
             buildTaskDone(),
-            const SizedBox(
-              height: 20,
-            ),
+            const SizedBox(height: 20,),
             Obx(() => buildListView(context),),
           ],
         )),

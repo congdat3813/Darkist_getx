@@ -65,8 +65,8 @@ class TaskList extends StatelessWidget {
     return Row(
       children: const <Widget>[
         Flexible(
-            child: Divider(
-          color: Colors.black45,
+          child: Divider(
+          // color: Colors.black45,
         )),
         SizedBox(width: 30),
         Text(
@@ -111,92 +111,96 @@ class TaskList extends StatelessWidget {
   }
 
   Widget buildListView(BuildContext context) {
-    return
-      Expanded(
-        child: Container(
-          height: 200,
-          margin: const EdgeInsets.fromLTRB(20, 20, 20, 0),
-          child: ListView.separated(
-            physics: const BouncingScrollPhysics(),
-            scrollDirection: Axis.horizontal,
-            separatorBuilder: (context, index) => const SizedBox(width: 20),
-            itemCount: _getx.list.length,
-            itemBuilder: (BuildContext context, index) {
-              final curtask = _getx.list[index];
-              print('item: ${curtask.items}');
-              if (curtask.status == true) {
-                return const SizedBox.shrink();
-              }
-              else{
-                return InkWell(
-                  onTap: () {
-                    _getx.currentIndex.value= index;
-                    Route route = MaterialPageRoute(builder: (context) => ItemDetail());
-                    Navigator.push(context,route);
-                  },
-                  child: Container(
-                      width: 220,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10.0),
-                        color: Color(curtask.curcolor),
+    return Expanded(
+      child: Container(
+        height: 200,
+        margin: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+        child: ListView.separated(
+          physics: const BouncingScrollPhysics(),
+          scrollDirection: Axis.horizontal,
+          separatorBuilder: (context, index) => const SizedBox(width: 20),
+          itemBuilder: (BuildContext context, index) {
+            final item = _getx.list.elementAt(index);
+            if (item.status == true) {
+              return const SizedBox.shrink();
+            }
+            return InkWell(
+              onTap: () {
+                _getx.currentIndex.value= index;
+                Route route = MaterialPageRoute(builder: (context) => ItemDetail());
+                Navigator.push(context, route);
+              },
+              child: Container(
+                width: 220,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10.0),
+                  color: Color(item.curcolor),
+                ),
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: <Widget>[
+                      taskName(item),
+                      const Divider(
+                        indent: 50,
+                        thickness: 3,
+                        color: Colors.white,
                       ),
-                      child: SingleChildScrollView(
-                        child: Column(
-                          children: <Widget>[
-                            Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  vertical: 20, horizontal: 0),
-                              child: Text(curtask.name,
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w500,
-                                )
-                              )
-                            ),
-                            const Divider(
-                              indent: 50,
-                              thickness: 3,
-                              color: Colors.white,
-                            ),
-                            SizedBox(
-                              // width: 180,
-                              // height: 150,
-                              child: 
-                                Column(
-                                  children: _getx.list[index].items.map((tsk) {
-                                    return Row(
-                                      children: <Widget>[
-                                        Checkbox(
-                                            checkColor: Colors.white,
-                                            shape: const CircleBorder(),
-                                            activeColor: Color(curtask.curcolor),
-                                            value: tsk.values.toList().first,
-                                            onChanged: (bool? value) {}),
-                                        Text(tsk.keys.toList().first,
-                                            style: TextStyle(
-                                                fontSize: 15,
-                                                fontWeight: FontWeight.normal,
-                                                color: tsk.values.toList().first
-                                                    ? const Color(0xFFf7f1e3)
-                                                    : Colors.white,
-                                                decoration: tsk.values.toList().first
-                                                    ? TextDecoration.lineThrough
-                                                    : null)),
-                                      ],
-                                    );
-                                  }).toList(),
-                                ),
-                            )
-                          ],
-                        ),
-                      )
-                    )
-                );        
-              }
-            },
-          ),
+                      itemList(item),
+                    ],
+                  ),
+                )
+              )
+            );
+          },
+          itemCount: _getx.list.length,
+          
         ),
+      ),
+    );
+  }
+
+  Widget taskName(Tasks item){
+    return Padding(
+      padding: const EdgeInsets.symmetric(
+          vertical: 20, horizontal: 0),
+      child: Text(item.name,
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 18,
+            fontWeight: FontWeight.w500,
+          )
+        )
       );
+  }
+
+  Widget itemList(Tasks item){
+    return SizedBox(
+      child: Column(
+        children: item.items.map((tsk) {
+          return Row(
+            children: <Widget>[
+              Checkbox(
+                  checkColor: Colors.white,
+                  shape: const CircleBorder(),
+                  activeColor: Color(item.curcolor),
+                  value: tsk.values.toList().first,
+                  onChanged: (bool? value) {}),
+              Text(tsk.keys.toList().first,
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.normal,
+                    color: tsk.values.toList().first
+                        ? const Color(0xFFf7f1e3)
+                        : Colors.white,
+                    decoration: tsk.values.toList().first
+                        ? TextDecoration.lineThrough
+                        : null
+                    )
+                ),
+            ],
+          );
+        }).toList(),
+      )
+    );
   }
 }
